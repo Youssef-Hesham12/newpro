@@ -1,27 +1,19 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
-export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+import { NextRequest, NextResponse } from "next/server";
 
-  
-  if (token) {
-    return NextResponse.next();
-  }
 
- 
-  return NextResponse.redirect(new URL("/login", req.url));
+export async function middleware(request:NextRequest){
+    const token =
+    request.cookies.get("next-auth.session-token")?.value ||
+    request.cookies.get("_Secure-next-auth.session-token")?.value;
+    if(token){
+        return NextResponse.next();
+    }else{
+        return NextResponse.redirect(new URL('login',request.url))
+    }
+
 }
 
-export const config = {
-  matcher: [
-    "/cart",
-    "/home",
-    "/products",
-    "/categories",
-    "/brands",
-    "/allorders",
-    "/wishlist",
-  ],
-};
+export const config={
+    matcher:['/cart','/home','/products','/categories','/brands','/allorders','/wishlist']
+}
